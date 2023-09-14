@@ -39,21 +39,17 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [google_bigquery_dataset.example](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_dataset) | resource |
-| [google_bigquery_job.example](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_job) | resource |
-| [google_bigquery_table.example](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_table) | resource |
-| [google_kms_crypto_key.example](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/kms_crypto_key) | resource |
+| [google_artifact_registry_repository.pike](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/artifact_registry_repository) | resource |
+| [google_kms_crypto_key_iam_member.pike](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/kms_crypto_key_iam_member) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_dataset"></a> [dataset](#input\_dataset) | n/a | <pre>object({<br>    dataset_id                  = string<br>    friendly_name               = string<br>    description                 = string<br>    default_table_expiration_ms = number<br>  })</pre> | n/a | yes |
-| <a name="input_job"></a> [job](#input\_job) | n/a | <pre>object({<br>    job_id              = string<br>    query               = string<br>    allow_large_results = bool<br>    flatten_results     = bool<br><br><br>    key_result_statement = string<br><br>  })</pre> | n/a | yes |
-| <a name="input_key_name"></a> [key\_name](#input\_key\_name) | n/a | `string` | `"crypto-key-example"` | no |
-| <a name="input_keyring"></a> [keyring](#input\_keyring) | n/a | `any` | n/a | yes |
-| <a name="input_location"></a> [location](#input\_location) | n/a | `string` | n/a | yes |
-| <a name="input_table"></a> [table](#input\_table) | n/a | <pre>object({<br>    table_id = string<br>    external_data_configuration = object({<br>      autodetect    = bool<br>      source_format = string<br>      google_sheets_options = object({<br>        skip_leading_rows = number<br>      })<br>      source_uris = list(string)<br>    })<br>  })</pre> | n/a | yes |
+| <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
+| <a name="input_key"></a> [key](#input\_key) | n/a | `any` | n/a | yes |
+| <a name="input_project"></a> [project](#input\_project) | n/a | `any` | n/a | yes |
+| <a name="input_repository"></a> [repository](#input\_repository) | (optional) describe your variable | <pre>object({<br>    id          = string<br>    description = string<br>    format      = string<br>    location    = string<br>  })</pre> | n/a | yes |
 
 ## Outputs
 
