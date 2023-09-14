@@ -14,7 +14,7 @@
 Add **module.art.tf** to your code:-
 
 ```terraform
-module "bigquery" {
+module "art" {
   source             = "JamesWoolfenden/artifact-repository/gcp"
   version            = "0.0.1"
 }
