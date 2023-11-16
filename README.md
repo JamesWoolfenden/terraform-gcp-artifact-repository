@@ -14,7 +14,7 @@
 Add **module.art.tf** to your code:-
 
 ```terraform
-module "bigquery" {
+module "art" {
   source             = "JamesWoolfenden/artifact-repository/gcp"
   version            = "0.0.1"
 }
@@ -59,6 +59,27 @@ No outputs.
 ## Information
 
 <!-- BEGINNING OF PRE-COMMIT-PIKE DOCS HOOK -->
+The Terraform resource required is:
+
+```golang
+
+resource "google_project_iam_custom_role" "terraform_pike" {
+  project     = "pike"
+  role_id     = "terraform_pike"
+  title       = "terraform_pike"
+  description = "A user with least privileges"
+  permissions = [
+    "artifactregistry.repositories.create",
+    "artifactregistry.repositories.delete",
+    "artifactregistry.repositories.get",
+    "artifactregistry.repositories.update",
+    "cloudkms.cryptoKeys.getIamPolicy",
+    "cloudkms.cryptoKeys.setIamPolicy"
+  ]
+}
+
+
+```
 <!-- END OF PRE-COMMIT-PIKE DOCS HOOK -->
 
 ## Related Projects
