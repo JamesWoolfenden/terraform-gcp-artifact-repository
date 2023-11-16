@@ -1,4 +1,4 @@
 
 output "artifacts" {
-    value = module.art
+  value = module.art
 }
