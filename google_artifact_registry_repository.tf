@@ -3,7 +3,7 @@ resource "google_artifact_registry_repository" "pike" {
   repository_id = var.repository.id
   description   = var.repository.description
   format        = var.repository.format
-  kms_key_name  = var.key.name
+  kms_key_name  = var.key.id
   depends_on = [
     google_kms_crypto_key_iam_member.pike
   ]
