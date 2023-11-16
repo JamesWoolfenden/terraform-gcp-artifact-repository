@@ -7,6 +7,7 @@ resource "google_artifact_registry_repository" "pike" {
   depends_on = [
     google_kms_crypto_key_iam_member.pike
   ]
+  labels = var.common_tags
 }
 
 resource "google_kms_crypto_key_iam_member" "pike" {
