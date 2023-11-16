@@ -20,17 +20,17 @@ resource "google_artifact_registry_repository" "pike" {
       dynamic "condition" {
         for_each = cleanup_policies.value["condition"]
         content {
-          tag_state             = condition.value["tagState"]
-          tag_prefixes          = condition.value["tagPrefixes"]
-          older_than            = condition.value["olderThan"]
-          package_name_prefixes = condition.value["packageNamePrefixes"]
+          tag_state             = condition.value["tag_state"]
+          tag_prefixes          = condition.value["tag_prefixes"]
+          older_than            = condition.value["older_than"]
+          package_name_prefixes = condition.value["package_name_prefixes"]
         }
       }
       dynamic "most_recent_versions" {
-        for_each = cleanup_policies.value["mostRecentVersions"]
+        for_each = cleanup_policies.value["most_recent_versions"]
         content {
-          package_name_prefixes = most_recent_versions.value["packageNamePrefixes"]
-          keep_count            = most_recent_versions.value["keepCount"]
+          package_name_prefixes = most_recent_versions.value["package_name_prefixes"]
+          keep_count            = most_recent_versions.value["keep_count"]
         }
       }
     }
@@ -42,60 +42,18 @@ variable "cleanup_policies" {
     id     = string
     action = string
     condition = list(object({
-      tagState            = string
-      tagPrefixes         = list(string)
-      olderThan           = string
-      packageNamePrefixes = list(string)
+      tag_state             = string
+      tag_prefixes          = list(string)
+      older_than            = string
+      package_name_prefixes = list(string)
     }))
-    mostRecentVersions = list(object({
-      packageNamePrefixes = list(string)
-      keepCount           = number
+    most_recent_versions = list(object({
+      package_name_prefixes = list(string)
+      keep_count            = number
     }))
   }))
-
-  default = [{
-    id     = "delete-prerelease"
-    action = "DELETE"
-    condition = [{
-      tagState            = "TAGGED"
-      tagPrefixes         = ["alpha", "v0"]
-      olderThan           = "2592000s"
-      packageNamePrefixes = null
-    }]
-    mostRecentVersions = []
-    },
-    {
-      id     = "keep-tagged-release"
-      action = "KEEP"
-      condition = [{
-        tagState            = "TAGGED"
-        tagPrefixes         = ["release"]
-        olderThan           = null
-        packageNamePrefixes = ["webapp", "mobile"]
-      }]
-      mostRecentVersions = []
-    },
-    {
-      id        = "keep-minimum-versions"
-      action    = "KEEP"
-      condition = []
-      mostRecentVersions = [{
-        packageNamePrefixes = ["webapp", "mobile", "sandbox"]
-        keepCount           = 5
-      }]
-    }
-  ]
 }
 
-# {
-#   id     = "keep-minimum-versions"
-#   action = "KEEP"
-#   condition = [null]
-#   most_recent_versions=[{
-#     package_name_prefixes = ["webapp", "mobile", "sandbox"]
-#     keep_count            = 5
-#   }]
-# }
 
 resource "google_kms_crypto_key_iam_member" "pike" {
   crypto_key_id = var.key.id
