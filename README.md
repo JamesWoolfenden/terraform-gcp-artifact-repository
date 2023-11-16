@@ -30,6 +30,7 @@ No requirements.
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | n/a |
+| <a name="provider_google-beta"></a> [google-beta](#provider\_google-beta) | n/a |
 
 ## Modules
 
@@ -39,13 +40,14 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [google_artifact_registry_repository.pike](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/artifact_registry_repository) | resource |
+| [google-beta_google_artifact_registry_repository.pike](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_artifact_registry_repository) | resource |
 | [google_kms_crypto_key_iam_member.pike](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/kms_crypto_key_iam_member) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_cleanup_policies"></a> [cleanup\_policies](#input\_cleanup\_policies) | n/a | <pre>list(object({<br>    id     = string<br>    action = string<br>    condition = list(object({<br>      tagState            = string<br>      tagPrefixes         = list(string)<br>      olderThan           = string<br>      packageNamePrefixes = list(string)<br>    }))<br>    mostRecentVersions = list(object({<br>      packageNamePrefixes = list(string)<br>      keepCount           = number<br>    }))<br>  }))</pre> | <pre>[<br>  {<br>    "action": "DELETE",<br>    "condition": [<br>      {<br>        "olderThan": "2592000s",<br>        "packageNamePrefixes": null,<br>        "tagPrefixes": [<br>          "alpha",<br>          "v0"<br>        ],<br>        "tagState": "TAGGED"<br>      }<br>    ],<br>    "id": "delete-prerelease",<br>    "mostRecentVersions": []<br>  },<br>  {<br>    "action": "KEEP",<br>    "condition": [<br>      {<br>        "olderThan": null,<br>        "packageNamePrefixes": [<br>          "webapp",<br>          "mobile"<br>        ],<br>        "tagPrefixes": [<br>          "release"<br>        ],<br>        "tagState": "TAGGED"<br>      }<br>    ],<br>    "id": "keep-tagged-release",<br>    "mostRecentVersions": []<br>  },<br>  {<br>    "action": "KEEP",<br>    "condition": [],<br>    "id": "keep-minimum-versions",<br>    "mostRecentVersions": [<br>      {<br>        "keepCount": 5,<br>        "packageNamePrefixes": [<br>          "webapp",<br>          "mobile",<br>          "sandbox"<br>        ]<br>      }<br>    ]<br>  }<br>]</pre> | no |
 | <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
 | <a name="input_key"></a> [key](#input\_key) | n/a | `any` | n/a | yes |
 | <a name="input_project"></a> [project](#input\_project) | n/a | `any` | n/a | yes |
