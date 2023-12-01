@@ -53,10 +53,3 @@ variable "cleanup_policies" {
     }))
   }))
 }
-
-
-resource "google_kms_crypto_key_iam_member" "pike" {
-  crypto_key_id = var.key.id
-  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = "serviceAccount:service-${var.project.number}@gcp-sa-artifactregistry.iam.gserviceaccount.com"
-}

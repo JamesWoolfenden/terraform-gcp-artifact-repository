@@ -1,6 +1,6 @@
 module "art" {
   source      = "../../"
-  common_tags = var.common_tags
+  common_tags = { "createdby" = "Terraform" }
   project     = data.google_project.project
   key         = google_kms_crypto_key.pike
   repository = {

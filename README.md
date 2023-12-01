@@ -41,6 +41,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [google-beta_google_artifact_registry_repository.pike](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_artifact_registry_repository) | resource |
+| [google_artifact_registry_repository_iam_member.member](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/artifact_registry_repository_iam_member) | resource |
 | [google_kms_crypto_key_iam_member.pike](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/kms_crypto_key_iam_member) | resource |
 
 ## Inputs
@@ -50,6 +51,7 @@ No modules.
 | <a name="input_cleanup_policies"></a> [cleanup\_policies](#input\_cleanup\_policies) | n/a | <pre>list(object({<br>    id     = string<br>    action = string<br>    condition = list(object({<br>      tag_state             = string<br>      tag_prefixes          = list(string)<br>      older_than            = string<br>      package_name_prefixes = list(string)<br>    }))<br>    most_recent_versions = list(object({<br>      package_name_prefixes = list(string)<br>      keep_count            = number<br>    }))<br>  }))</pre> | n/a | yes |
 | <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
 | <a name="input_key"></a> [key](#input\_key) | n/a | `any` | n/a | yes |
+| <a name="input_members"></a> [members](#input\_members) | (optional) describe your variable | `list(string)` | `[]` | no |
 | <a name="input_project"></a> [project](#input\_project) | n/a | `any` | n/a | yes |
 | <a name="input_repository"></a> [repository](#input\_repository) | (optional) describe your variable | <pre>object({<br>    id          = string<br>    description = string<br>    format      = string<br>    location    = string<br>  })</pre> | n/a | yes |
 
@@ -76,6 +78,8 @@ resource "google_project_iam_custom_role" "terraform_pike" {
     "artifactregistry.repositories.create",
     "artifactregistry.repositories.delete",
     "artifactregistry.repositories.get",
+    "artifactregistry.repositories.getIamPolicy",
+    "artifactregistry.repositories.setIamPolicy",
     "artifactregistry.repositories.update",
     "cloudkms.cryptoKeys.getIamPolicy",
     "cloudkms.cryptoKeys.setIamPolicy"

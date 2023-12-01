@@ -18,3 +18,9 @@ variable "repository" {
   })
   description = "(optional) describe your variable"
 }
+
+variable "members" {
+  type        = list(string)
+  description = "(optional) describe your variable"
+  default     = []
+}
