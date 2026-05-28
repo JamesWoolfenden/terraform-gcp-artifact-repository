@@ -1,3 +1,4 @@
+# holden:ignore:HLD_TF_026 — examples intentionally use ../../ to reference the local module root
 module "art" {
   source      = "../../"
   common_tags = { "createdby" = "Terraform" }
