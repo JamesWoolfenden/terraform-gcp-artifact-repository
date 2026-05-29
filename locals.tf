@@ -1,3 +1,4 @@
 locals {
-  members = concat(var.members, ["serviceAccount:service-${var.project.number}@serverless-robot-prod.iam.gserviceaccount.com"])
+  service_robot = "serviceAccount:service-${var.project_id}@serverless-robot-prod.iam.gserviceaccount.com"
+  members       = concat(var.members, [local.service_robot])
 }

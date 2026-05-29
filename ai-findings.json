@@ -1,0 +1,41 @@
+{
+  "findings": [
+    {
+      "confidence": "high",
+      "explanation": "The `members` variable is concatenated with `local.service_robot` in `locals.tf` and then iterated into `google_artifact_registry_repository_iam_member.member` at line 7 (`member = local.members[count.index]`). Because the `member` attribute resolves through a local to a variable, the deterministic engine evaluates it as an opaque expression and cannot compare it against `allUsers`/`allAuthenticatedUsers`. A caller passing `allUsers` via `var.members` would grant public read access to the repository \u2014 exposing private container images or other artifacts \u2014 and neither HLD_GCP_024 nor HLD_GCP_018 (which doesn't cover this resource type at all) would catch it at scan time.",
+      "file": "variables.tf",
+      "id": "HOLDEN_AI_001",
+      "line": 22,
+      "principle": "network-security",
+      "related_resources": [
+        "google_artifact_registry_repository_iam_member.member",
+        "locals.tf"
+      ],
+      "remediation": "Enforce `constraints/iam.allowedPolicyMemberDomains` at the Organisation or Folder level via `google_organization_policy` or `google_org_policy_policy`. This rejects any IAM binding containing `allUsers`, `allAuthenticatedUsers`, or principals outside approved domains at the GCP API level \u2014 rejecting Terraform, gcloud, Console, and any other caller regardless of module code. A Terraform `validation` block is not a substitute: it only runs during `plan`/`apply` and is bypassed by direct API access.",
+      "resource": "variable.members",
+      "severity": "HIGH",
+      "title": "var.members has no validation preventing allUsers/allAuthenticatedUsers \u2014 HLD_GCP_024 cannot catch dynamic member values"
+    },
+    {
+      "confidence": "high",
+      "explanation": "The `cleanup_policy_dry_run` variable defaults to `true`, meaning every `cleanup_policies` block a caller configures is evaluated in simulation mode only \u2014 no artifacts are ever deleted. A caller who supplies `cleanup_policies` but does not explicitly set `cleanup_policy_dry_run = false` will have a false sense that stale images are being pruned, leading to unbounded registry growth and elevated storage costs. The variable description does warn about this, but nothing in the module enforces or alerts on the mismatch. There is no deterministic rule that checks whether this flag is safe-default-off when policies are defined.",
+      "file": "variables.tf",
+      "id": "HOLDEN_AI_002",
+      "line": 47,
+      "principle": "governance",
+      "related_resources": [
+        "google_artifact_registry_repository.pike"
+      ],
+      "remediation": "Change the default to `default = false` to make cleanup policies effective by default, or add a Terraform `validation` block to raise an error when `cleanup_policies` is non-empty and `cleanup_policy_dry_run` is `true`, e.g.: `condition = length(var.cleanup_policies) == 0 || !var.cleanup_policy_dry_run  error_message = \"cleanup_policy_dry_run must be false when cleanup_policies are configured.\"`",
+      "resource": "variable.cleanup_policy_dry_run",
+      "severity": "LOW",
+      "title": "cleanup_policy_dry_run defaults to true \u2014 all cleanup policies are evaluated but never enforced by default"
+    }
+  ],
+  "suggested_policies": [
+    {
+      "rationale": "An Artifact Registry repository with mode = REMOTE_REPOSITORY acts as a transparent proxy to an upstream public registry (Docker Hub, npm, PyPI, Maven Central, etc.). Unlike a standard repository, a remote repository will pull and cache packages from the internet on demand, without content scanning or approval \u2014 a textbook supply-chain injection vector. This check can be expressed as a single deterministic attribute comparison on google_artifact_registry_repository and coverage_by_type currently only lists HLD_GCP_060 (CMEK) for this resource type; no supply-chain rule exists.",
+      "yaml": "id: HLD_GCP_071\nname: Artifact Registry remote repositories must not proxy external registries\nprinciple: supply-chain\nseverity: HIGH\nrationale: |\n  A REMOTE_REPOSITORY transparently proxies an upstream public registry (Docker Hub,\n  npm, PyPI, Maven Central, etc.) and caches packages on demand. This bypasses content\n  scanning, admission controls, and approved-source policies, creating a path for\n  dependency-confusion and typosquatting attacks. Teams should use virtual repositories\n  with explicit upstream curation or a standard repository with a controlled import\n  pipeline instead.\nremediation: |\n  Remove the `mode = \"REMOTE_REPOSITORY\"` attribute and replace with a\n  STANDARD_REPOSITORY workflow that imports approved packages explicitly, or use a\n  VIRTUAL_REPOSITORY that routes only to pre-vetted upstream sources:\n\n    resource \"google_artifact_registry_repository\" \"example\" {\n      format = \"DOCKER\"\n      # mode defaults to STANDARD_REPOSITORY \u2014 remove any REMOTE_REPOSITORY setting\n    }\nresources:\n  google_artifact_registry_repository:\n    path: mode\n    not_equals: REMOTE_REPOSITORY\n"
+    }
+  ]
+}

@@ -1,9 +1,8 @@
 # holden:ignore:HLD_TF_026 — examples intentionally use ../../ to reference the local module root
 module "art" {
-  source      = "../../"
-  common_tags = { "createdby" = "Terraform" }
-  project     = data.google_project.project
-  key         = google_kms_crypto_key.pike
+  source     = "../../"
+  project_id = data.google_project.pike.project_id
+  key        = google_kms_crypto_key.pike.id
   repository = {
     location    = "us-central1"
     id          = "my-repository"
@@ -43,18 +42,4 @@ module "art" {
     }
   ]
 
-}
-
-data "google_project" "project" {}
-
-resource "google_kms_crypto_key" "pike" {
-  #checkov:skip=CKV_GCP_82:example
-  #checkov:skip=CKV_GCP_43:example
-  name     = "pike"
-  key_ring = google_kms_key_ring.pike.name
-}
-
-resource "google_kms_key_ring" "pike" {
-  location = "us-central1"
-  name     = "pike"
 }

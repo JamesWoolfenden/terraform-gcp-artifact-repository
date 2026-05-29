@@ -1,7 +1,6 @@
 
 resource "google_kms_crypto_key_iam_member" "pike" {
-  count         = length(local.members)
-  crypto_key_id = var.key.id
+  crypto_key_id = var.key
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = local.members[count.index]
+  member        = local.service_robot
 }

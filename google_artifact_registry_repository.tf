@@ -4,13 +4,12 @@ resource "google_artifact_registry_repository" "pike" {
   repository_id = var.repository.id
   description   = var.repository.description
   format        = var.repository.format
-  kms_key_name  = var.key.id
+  project       = var.project_id
+  kms_key_name  = var.key
   depends_on = [
     google_kms_crypto_key_iam_member.pike
   ]
-  labels = var.common_tags
-
-  cleanup_policy_dry_run = false
+  cleanup_policy_dry_run = var.cleanup_policy_dry_run
 
   dynamic "cleanup_policies" {
     for_each = var.cleanup_policies
@@ -35,21 +34,4 @@ resource "google_artifact_registry_repository" "pike" {
       }
     }
   }
-}
-
-variable "cleanup_policies" {
-  type = list(object({
-    id     = string
-    action = string
-    condition = list(object({
-      tag_state             = string
-      tag_prefixes          = list(string)
-      older_than            = string
-      package_name_prefixes = list(string)
-    }))
-    most_recent_versions = list(object({
-      package_name_prefixes = list(string)
-      keep_count            = number
-    }))
-  }))
 }
