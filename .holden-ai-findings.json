@@ -1,0 +1,39 @@
+{
+  "findings": [
+    {
+      "confidence": "high",
+      "explanation": "Both workflows call JamesWoolfenden/.github/.github/workflows/terraform-{verify,pr}-gcp.yml@main (HLD_CI_017 already flags the mutable ref) impersonating terraform-gcp-artifact-reposit@pike-477416.iam.gserviceaccount.com. That identity's own least-privilege role, defined in .pike/pike.generated_policy.tf lines 8-16, includes cloudkms.cryptoKeys.setIamPolicy and artifactregistry.repositories.setIamPolicy. Both are full-policy-replace permissions (GCP has no narrower 'add one binding' permission), so whoever controls the JamesWoolfenden/.github main branch can, through this pipeline, replace the entire IAM policy on the CMEK key protecting every artifact in the registry and on the registry itself \u2014 e.g. grant an arbitrary principal cloudkms.admin or artifactregistry.admin \u2014 not merely run Terraform plans/applies against the resources this module defines. This deepens HLD_CI_017's generic 'authenticate to cloud provider' rationale with the specific blast radius for this repo: compromise of one mutable ref in an unrelated repo escalates to full control of confidentiality (KMS) and access control (registry) for this module's managed resources.",
+      "file": ".github/workflows/verify.yml",
+      "first_seen": "2026-08-01",
+      "fixable": false,
+      "id": "HOLDEN_AI_001",
+      "last_seen": "2026-08-01",
+      "line": 19,
+      "principle": "identity-and-access",
+      "related_resources": [
+        "gha_job.pull_request.yml.pr",
+        "google_project_iam_custom_role.terraform_pike",
+        "google_kms_crypto_key_iam_member.pike",
+        "google_artifact_registry_repository_iam_member.users"
+      ],
+      "remediation": "Pin both job-level uses: to the resolved commit SHA of terraform-verify-gcp.yml/terraform-pr-gcp.yml (fixes HLD_CI_017 and closes this path). Separately, verify branch protection is enforced on JamesWoolfenden/.github's main branch, since it is a trust root for every repo that calls into it. setIamPolicy itself can't be narrowed further while these Terraform IAM member resources exist \u2014 that's an inherent GCP API constraint, not a fixable over-grant \u2014 so the practical mitigation is closing the ref-pinning gap, not editing the custom role.",
+      "resource": "gha_job.verify.yml.verify",
+      "severity": "HIGH",
+      "status": "suppressed",
+      "supersedes": "HLD_CI_017",
+      "suppression_reason": "JamesWoolfenden/.github is the same author's own repo; @main accepted as a self-controlled trust root rather than pinned to a SHA. Suppressed alongside HLD_CI_017 via inline # holden:ignore comments in verify.yml and pull_request.yml.",
+      "title": "CI identity reachable via mutable-ref reusable workflow holds setIamPolicy on the CMEK key and the repository"
+    }
+  ],
+  "scan_date": "2026-08-01T00:00:00Z",
+  "scan_path": ".",
+  "suggested_policies": [
+    {
+      "dsl_extension_note": "The `references.must` block currently compares the target resource's attribute to a fixed literal (path + condition_operator: value). This policy needs a new operator, e.g. `equals_source_path: <attr>`, that instead compares the target attribute to the SOURCE resource's own attribute at a given path \u2014 i.e. cross-resource field equality where neither side is a literal. This is the same missing primitive already tracked for the firewall.target_tags vs instance.tags case (see prior gap-analysis note); recommend implementing one general primitive that covers both.",
+      "rationale": "google_artifact_registry_repository_iam_member.users originally omitted `project`, silently falling back to the provider's default project even though the sibling google_artifact_registry_repository.pike resource sets project explicitly from var.project_id. In a multi-project module invocation (provider default project != var.project_id), the IAM grant would resolve against a same-named repository in the wrong project instead of erroring \u2014 an unreviewed cross-project access grant. This was fixed in this scan (see accompanying diff), but the underlying pattern \u2014 an *_iam_member/_iam_binding resource whose project should be pinned to its referenced resource's own project \u2014 is repeatable across every Google *_iam_member type that has both a project attribute and a reference to a project-scoped parent resource.",
+      "requires_dsl_extension": true,
+      "yaml": "id: HLD_PROPOSED_001\nname: IAM member/binding resources must not omit project when their referenced resource sets one explicitly\nprinciple: identity-and-access\nseverity: MEDIUM\nrationale: |\n  Omitting project on an *_iam_member/_iam_binding resource falls back to the\n  provider's default project. If the referenced parent resource (e.g. the\n  repository, key, or bucket the binding applies to) was created with an\n  explicit project different from the provider default, the binding silently\n  targets a same-named resource in the wrong project instead of failing \u2014\n  producing an unreviewed access grant in an unintended project.\nremediation: |\n  Set project explicitly on the IAM member/binding resource, referencing the\n  parent resource's own project attribute directly:\n    resource \"google_artifact_registry_repository_iam_member\" \"readers\" {\n      project    = google_artifact_registry_repository.pike.project\n      location   = google_artifact_registry_repository.pike.location\n      repository = google_artifact_registry_repository.pike.name\n      role       = \"roles/artifactregistry.reader\"\n      member     = each.value\n    }\nresources:\n  google_artifact_registry_repository_iam_member:\n    references:\n      via: repository\n      type: google_artifact_registry_repository\n      must:\n        path: project\n        equals_source_path: project\n"
+    }
+  ],
+  "suggested_suppressions": []
+}

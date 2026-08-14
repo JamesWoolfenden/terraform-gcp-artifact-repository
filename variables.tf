@@ -11,6 +11,7 @@ variable "project_id" {
 
 variable "key" {
   type        = string
+  sensitive   = true
   description = "The KMS key to use for encrypting artifacts in the repository. Must be in the format 'projects/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey}'."
   validation {
     condition     = can(regex("^projects/[^/]+/locations/[^/]+/keyRings/[^/]+/cryptoKeys/[^/]+$", var.key))
@@ -34,7 +35,7 @@ variable "repository" {
 
 variable "members" {
   type        = list(string)
-  description = "(optional) describe your variable"
+  description = "Additional principals (e.g. \"user:name@example.com\", \"serviceAccount:sa@project.iam.gserviceaccount.com\") granted roles/artifactregistry.reader on the repository."
   default     = []
   validation {
     condition     = alltrue([for m in var.members : !contains(["allUsers", "allAuthenticatedUsers"], m)])
@@ -69,8 +70,4 @@ variable "cleanup_policy_dry_run" {
   type        = bool
   description = "When true, cleanup policies are evaluated but no artifacts are deleted. Set to false to enforce deletion."
   default     = true
-  validation {
-    condition     = var.cleanup_policy_dry_run == true || var.cleanup_policy_dry_run == false
-    error_message = "cleanup_policy_dry_run must be a boolean value."
-  }
 }

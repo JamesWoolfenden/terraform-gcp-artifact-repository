@@ -51,7 +51,7 @@ No modules.
 | <a name="input_cleanup_policies"></a> [cleanup\_policies](#input\_cleanup\_policies) | Cleanup policies for the repository. Each policy specifies conditions for deleting or retaining artifacts. | <pre>list(object({<br/>    id     = string<br/>    action = string<br/>    condition = list(object({<br/>      tag_state             = string<br/>      tag_prefixes          = list(string)<br/>      older_than            = string<br/>      package_name_prefixes = list(string)<br/>    }))<br/>    most_recent_versions = list(object({<br/>      package_name_prefixes = list(string)<br/>      keep_count            = number<br/>    }))<br/>  }))</pre> | `[]` | no |
 | <a name="input_cleanup_policy_dry_run"></a> [cleanup\_policy\_dry\_run](#input\_cleanup\_policy\_dry\_run) | When true, cleanup policies are evaluated but no artifacts are deleted. Set to false to enforce deletion. | `bool` | `true` | no |
 | <a name="input_key"></a> [key](#input\_key) | The KMS key to use for encrypting artifacts in the repository. Must be in the format 'projects/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey}'. | `string` | n/a | yes |
-| <a name="input_members"></a> [members](#input\_members) | (optional) describe your variable | `list(string)` | `[]` | no |
+| <a name="input_members"></a> [members](#input\_members) | Additional principals (e.g. "user:name@example.com", "serviceAccount:sa@project.iam.gserviceaccount.com") granted roles/artifactregistry.reader on the repository. | `list(string)` | `[]` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The ID of the project in which to create the repository. This is used for labeling and organizational purposes. | `string` | n/a | yes |
 | <a name="input_repository"></a> [repository](#input\_repository) | Configuration for the Artifact Registry repository, including its ID, description, format, and location. | <pre>object({<br/>    id          = string<br/>    description = string<br/>    format      = string<br/>    location    = string<br/>  })</pre> | n/a | yes |
 
@@ -68,7 +68,7 @@ No modules.
 The Terraform resource required is:
 
 ```golang
-
+# apply role
 resource "google_project_iam_custom_role" "terraform_pike" {
   project     = "pike-477416"
   role_id     = "terraform_pike"
@@ -83,6 +83,19 @@ resource "google_project_iam_custom_role" "terraform_pike" {
     "artifactregistry.repositories.update",
     "cloudkms.cryptoKeys.getIamPolicy",
     "cloudkms.cryptoKeys.setIamPolicy"
+  ]
+}
+
+# plan role
+resource "google_project_iam_custom_role" "terraform_pike_plan" {
+  project     = "pike-477416"
+  role_id     = "terraform_pike_plan"
+  title       = "terraform_pike_plan"
+  description = "A user with least privileges"
+  permissions = [
+    "artifactregistry.repositories.get",
+    "artifactregistry.repositories.getIamPolicy",
+    "cloudkms.cryptoKeys.getIamPolicy"
   ]
 }
 

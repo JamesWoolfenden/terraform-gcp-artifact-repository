@@ -1,3 +1,7 @@
+# holden:ignore:HLD_TF_063_MEDIUM — all 4 dynamic blocks (docker_config, cleanup_policies,
+# condition, most_recent_versions) are GCP provider-schema block types required for
+# multi-format support (DOCKER/MAVEN/NPM/PYTHON) and the full cleanup_policies feature;
+# none stand in for a literal a plain attribute could express.
 resource "google_artifact_registry_repository" "pike" {
   provider      = google-beta
   location      = var.repository.location
@@ -5,7 +9,15 @@ resource "google_artifact_registry_repository" "pike" {
   description   = var.repository.description
   format        = var.repository.format
   project       = var.project_id
-  kms_key_name  = var.key
+
+  dynamic "docker_config" {
+    for_each = local.is_docker ? [true] : []
+    content {
+      immutable_tags = true
+    }
+  }
+
+  kms_key_name = var.key
   depends_on = [
     google_kms_crypto_key_iam_member.pike
   ]
@@ -33,5 +45,8 @@ resource "google_artifact_registry_repository" "pike" {
         }
       }
     }
+  }
+  lifecycle {
+    prevent_destroy = true
   }
 }
