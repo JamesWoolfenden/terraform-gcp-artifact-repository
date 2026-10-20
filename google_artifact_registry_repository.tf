@@ -19,7 +19,7 @@ resource "google_artifact_registry_repository" "pike" {
 
   kms_key_name = var.key
   depends_on = [
-    google_kms_crypto_key_iam_member.pike
+    time_sleep.kms_propagation
   ]
   cleanup_policy_dry_run = var.cleanup_policy_dry_run
 

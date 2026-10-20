@@ -4,10 +4,7 @@
 [![Latest Release](https://img.shields.io/github/release/JamesWoolfenden/terraform-gcp-artifact-repository.svg)](https://github.com/JamesWoolfenden/terraform-gcp-artifact-repository/releases/latest)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/JamesWoolfenden/terraform-gcp-artifact-repository.svg?label=latest)](https://github.com/JamesWoolfenden/terraform-gcp-artifact-repository/releases/latest)
 ![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.14.0-blue.svg)
-[![Infrastructure Tests](https://www.bridgecrew.cloud/badges/github/JamesWoolfenden/terraform-gcp-artifact-repository/cis_aws)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=JamesWoolfenden%2Fterraform-gcp-artifact-repository&benchmark=CIS+AWS+V1.2)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![checkov](https://img.shields.io/badge/checkov-verified-brightgreen)](https://www.checkov.io/)
-[![Infrastructure Tests](https://www.bridgecrew.cloud/badges/github/jameswoolfenden/terraform-gcp-artifact-repository/general)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=JamesWoolfenden%2Fterraform-gcp-artifact-repository&benchmark=INFRASTRUCTURE+SECURITY)
 
 ## Usage
 
@@ -113,17 +110,17 @@ Check out these related projects.
 
 **Got a question?**
 
-File a GitHub [issue](https://github.com/jameswoolfenden/terraform-aws-bigquery/issues).
+File a GitHub [issue](https://github.com/JamesWoolfenden/terraform-gcp-artifact-repository/issues).
 
 ## Contributing
 
 ### Bug Reports & Feature Requests
 
-Please use the [issue tracker](https://github.com/jameswoolfenden/terraform-aws-bigquery/issues) to report any bugs or file feature requests.
+Please use the [issue tracker](https://github.com/JamesWoolfenden/terraform-gcp-artifact-repository/issues) to report any bugs or file feature requests.
 
 ## Copyrights
 
-Copyright © 2023 James Woolfenden
+Copyright © 2023-6 James Woolfenden
 
 ## License
 

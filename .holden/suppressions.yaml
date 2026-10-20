@@ -1,0 +1,10 @@
+suppressions:
+  - policy_id: HLD_TF_004
+    resource_id: terraform
+    reason: "Reusable child module: backend configuration belongs to the consuming root module, not here."
+    approved_by: james.woolfenden@gmail.com
+
+  - policy_id: HLD_TF_005
+    resource_id: provider_requirement.time
+    reason: "Reusable child module with no workspace of its own, so a lock file doesn't apply here (per HLD_TF_005's own rationale: this check is meant only for root modules); the consuming root module's lock file covers the time provider."
+    approved_by: james.woolfenden@gmail.com

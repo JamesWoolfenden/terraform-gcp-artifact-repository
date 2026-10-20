@@ -1,3 +1,8 @@
 policies:
   - policies
   - .holden\policies
+scan_roots:
+  - path: .
+    targets: [gha]
+  - path: "example/examplea"  
+    targets: [terraform]
