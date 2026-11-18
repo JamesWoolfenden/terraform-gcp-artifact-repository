@@ -4,5 +4,5 @@ policies:
 scan_roots:
   - path: .
     targets: [gha]
-  - path: "example/examplea"  
+  - path: "example/examplea"
     targets: [terraform]
